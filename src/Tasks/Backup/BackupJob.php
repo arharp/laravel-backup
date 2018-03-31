@@ -230,15 +230,12 @@ class BackupJob
 
             $temporaryFilePath = $this->temporaryDirectory->path('db-dumps'.DIRECTORY_SEPARATOR.$fileName);
 
-            $dbDumper->dumpToFile($temporaryFilePath);
-
             if (config('backup.backup.gzip_database_dump')) {
-                consoleOutput()->info("Gzipping {$dbDumper->getDbName()}...");
-
-                $compressedDumpPath = Gzip::compress($temporaryFilePath);
-
-                return $compressedDumpPath;
+                $dbDumper->enableCompression();
+                $temporaryFilePath .= '.gz';
             }
+
+            $dbDumper->dumpToFile($temporaryFilePath);
 
             return $temporaryFilePath;
         })->toArray();
